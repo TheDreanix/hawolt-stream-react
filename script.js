@@ -56,11 +56,11 @@ function addMessageElement(isWithType, user, identifier, msg) {
   if (isWithType) {
     message.classList.add("system")
     attendee.innerText = user;
-    content.innerText = " " + msg;
+    content.innerHTML = " " + msg;
   } else {
     attendee.classList = "user-message";
     attendee.innerText = user + ":";
-    content.innerText = " " + msg;
+    content.innerHTML = " " + msg;
   }
   message.appendChild(attendee);
   message.appendChild(content);
