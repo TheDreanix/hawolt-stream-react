@@ -43,7 +43,7 @@ function addMessageToMessagebox(json) {
 }
 
 function addMessageElement(isWithType, user, identifier, msg) {
-  let messagebox = document.getElementById("box");
+  let messagebox = document.getElementById("chatbox");
   let message = document.createElement("div");
   message.classList = 'message';
   let attendee = document.createElement("span");
@@ -129,6 +129,7 @@ window.onload = function () {
 
   video.muted = true;
   volumeControl.disabled = video.muted;
+  setVolume()
 
   window.hls = new Hls();
   var hls = window.hls;
