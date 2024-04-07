@@ -1,5 +1,6 @@
 var source;
 var client;
+var fullscreen = false;
 var path = location.pathname.substring(1);
 var channel = path.length == 0 ? 'hawolt' : path;
 
@@ -8,7 +9,6 @@ let isPageClicked = false;
 function incoming(json) {
   if (!json.hasOwnProperty("instruction")) return;
   let instruction = json["instruction"];
-  console.log(json);
   switch (instruction) {
     case "list":
       document.getElementById("viewers").innerText = json["users"].length;
@@ -24,7 +24,7 @@ function darkness() {
 }
 
 function connecting() {
-  addMessageElement(true, "", "system", "connecting to chat")
+  addMessageElement(true, "", "system", "connecting to chat...")
 }
 
 function reconnect() {
@@ -44,20 +44,22 @@ function addMessageToMessagebox(json) {
 }
 
 function addMessageElement(isWithType, user, identifier, msg) {
-  let messagebox = document.getElementById("box");
+  let messagebox = document.getElementById("chatbox");
   let message = document.createElement("div");
   message.classList = 'message';
   let attendee = document.createElement("span");
   attendee.title = identifier;
   let content = document.createElement("span");
   content.title = new Date().toLocaleString();
+  msg = linkifyHtml(msg)
   if (isWithType) {
+    message.classList.add("system")
     attendee.innerText = user;
-    content.innerText = " " + msg;
+    content.innerHTML = " " + msg;
   } else {
     attendee.classList = "user-message";
     attendee.innerText = user + ":";
-    content.innerText = " " + msg;
+    content.innerHTML = " " + msg;
   }
   message.appendChild(attendee);
   message.appendChild(content);
@@ -66,8 +68,8 @@ function addMessageElement(isWithType, user, identifier, msg) {
 }
 
 function ready() {
-  addMessageElement(true, "", "system", "connected to chat")
-  addMessageElement(true, "", "system", "change your name using .namechange")
+  addMessageElement(true, "", "system", "connected.")
+  addMessageElement(true, "", "system", "change your name using .rename NAME")
   enter(channel);
 }
 
@@ -76,7 +78,7 @@ function enter(channel) {
 }
 
 function onJoinEvent(json) {
-  console.log(json);
+
 }
 
 function submitMessage() {
@@ -91,11 +93,11 @@ function submitMessage() {
   } else {
     let command = msg.substring(1).split(" ")[0];
     switch (command) {
-      case "namechange":
+      case "rename":
         if (msg.split(" ").length > 1) {
           client.namechange(btoa(msg.split(" ").slice(1).join(" ")), darkness, channel);
         } else {
-          addMessageElement(true, "", "system", "usage: .namechange NAME")
+          addMessageElement(true, "", "system", "usage: .rename NAME")
         }
         break;
     }
@@ -120,13 +122,45 @@ window.onload = function () {
   }
 
   var video = document.getElementById('video');
+  var content = document.getElementById("content")
+  var videoParent = document.getElementById("video-parent")
   var qualitySelect = document.getElementById('quality-select');
   var muteButton = document.getElementById('mute-button');
   var playButton = document.getElementById('play-button');
   var volumeControl = document.getElementById('volume-control');
+  var fullscreenBtn = document.getElementById("fullscreen");
+
+  document.addEventListener('fullscreenchange', fullscreenHandler, false);
+  document.addEventListener('mozfullscreenchange', fullscreenHandler, false);
+  document.addEventListener('MSFullscreenChange', fullscreenHandler, false);
+  document.addEventListener('webkitfullscreenchange', fullscreenHandler, false);
+
+  fullscreenBtn.addEventListener('click', () => {
+    if (!fullscreen) {
+      if (content.requestFullscreen) {
+        content.requestFullscreen();
+      } else if (content.webkitRequestFullscreen) { /* Safari */
+        content.webkitRequestFullscreen();
+      } else if (content.msRequestFullscreen) { /* IE11 */
+        content.msRequestFullscreen();
+      }
+    } else {
+      document.exitFullscreen()
+    }
+  });
+
+  function fullscreenHandler() {
+    fullscreen = !fullscreen;
+    videoParent.classList.toggle("fullscreen");
+    content.classList.toggle("overflow")
+
+    fullscreenBtn.childNodes[0].classList.toggle("fa-expand");
+    fullscreenBtn.childNodes[0].classList.toggle("fa-compress");
+  }
 
   video.muted = true;
   volumeControl.disabled = video.muted;
+  setVolume()
 
   window.hls = new Hls();
   var hls = window.hls;
