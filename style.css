@@ -198,6 +198,8 @@ video {
 	height: 100%;
 	overflow-y: scroll;
 	word-wrap: break-word;
+	display: flex;
+	flex-direction: column;
 }
 
 #submit {
@@ -214,7 +216,7 @@ video {
 }
 
 .message-align img {
-    vertical-align: middle;
+	vertical-align: middle;
 }
 
 #text-message {
