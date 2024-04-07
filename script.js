@@ -7,7 +7,28 @@ var channel = path.length == 0 ? 'hawolt' : path;
 let isPageClicked = false;
 
 function incoming(json) {
-  if (!json.hasOwnProperty("instruction")) return;
+  console.log("[ws-in] " + json)
+  if (!json.hasOwnProperty("instruction")) {
+    var data = json["result"].split(" ");
+    switch (data[1]) {
+      case "COOLDOWN":
+        addMessageElement(true, "", "You need to wait before you can update your name again.")
+        break;
+      case "BAD_NAME":
+        addMessageElement(true, "", "A name can only contain A-Z and 0-9, max length is 15.")
+        break;
+      case "NAME_TAKEN":
+        addMessageElement(true, "", "This name is already taken.")
+        break;
+      case "EMPTY_MESSAGE":
+        addMessageElement(true, "", "You can't send an empty message.")
+        break;
+      case "MESSAGE_TO_LONG":
+        addMessageElement(true, "", "Your message is to long, character limit is 200.")
+        break;
+    }
+    return;
+  }
   let instruction = json["instruction"];
   switch (instruction) {
     case "list":
