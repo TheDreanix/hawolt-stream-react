@@ -82,7 +82,7 @@ function addMessageElement(isWithType, user, identifier, msg) {
   } else {
     attendee.classList = "user-message";
     attendee.innerText = user + ": ";
-    content.innerHTML = msg;
+    content.innerHTML = "&nbsp;" + msg;
   }
   message.appendChild(attendee);
   message.appendChild(content);
