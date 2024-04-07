@@ -61,7 +61,9 @@ function addMessageToMessagebox(json) {
   let msg = json["message"];
   let identifier = json["identifier"];
   let isWithType = json.hasOwnProperty("type");
-  addMessageElement(isWithType, user, identifier, msg);
+  let temp = document.createElement("span")
+  temp.innerText = msg;
+  addMessageElement(isWithType, user, identifier, replaceEmotesWithImages(linkifyHtml(temp.innerHTML)));
 }
 
 function addMessageElement(isWithType, user, identifier, msg) {
@@ -80,8 +82,7 @@ function addMessageElement(isWithType, user, identifier, msg) {
   } else {
     attendee.classList = "user-message";
     attendee.innerText = user + ": ";
-    content.innerText = msg;
-    content.innerHTML = replaceEmotesWithImages(linkifyHtml(content.innerHTML))
+    content.innerHTML = msg;
   }
   message.appendChild(attendee);
   message.appendChild(content);
