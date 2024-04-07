@@ -81,8 +81,8 @@ function addMessageElement(isWithType, user, identifier, msg) {
     content.innerHTML = (user.length == 0 ? '' : ' ') + msg;
   } else {
     attendee.classList = "user-message";
-    attendee.innerText = user + ": ";
-    content.innerHTML = msg;
+    attendee.innerText = user + ":";
+    content.innerHTML = "&nbsp;" + msg;
   }
   message.appendChild(attendee);
   message.appendChild(content);
@@ -110,7 +110,7 @@ function submitMessage() {
   if (!msg.startsWith('.')) {
     client.message(
       channel,
-      darkness,
+      incoming,
       btoa(encodeURIComponent(msg))
     );
   } else {
@@ -266,9 +266,11 @@ window.onload = function () {
   function startPlayback() {
     if (video.paused) {
       video.play();
+      playButton.title = "Pause (space)"
       playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Change button to pause icon
     } else {
       video.pause();
+      playButton.title = "Play (space)"
       playButton.innerHTML = '<i class="fas fa-play"></i>'; // Change button to play icon
     }
   }
@@ -294,6 +296,34 @@ window.onload = function () {
       submitMessage();
     }
   });
+
+  document.addEventListener("keypress", function (event) {
+    if (document.activeElement != textBox) {
+      console.log(event.key);
+      switch (event.key) {
+        case "f":
+          if (!fullscreen) {
+            if (content.requestFullscreen) {
+              content.requestFullscreen();
+            } else if (content.webkitRequestFullscreen) { /* Safari */
+              content.webkitRequestFullscreen();
+            } else if (content.msRequestFullscreen) { /* IE11 */
+              content.msRequestFullscreen();
+            }
+          } else {
+            document.exitFullscreen()
+          }
+          break;
+        case "m":
+          video.muted = !video.muted;
+          muteButton.innerHTML = video.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
+          break;
+        case " ":
+          startPlayback();
+          break;
+      }
+    }
+  })
 }
 
 function load(playlist, delay = 1000) {
