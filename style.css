@@ -35,6 +35,10 @@ body {
 	height: 100%;
 }
 
+.overflow {
+	overflow: hidden;
+}
+
 #stream-container {
 	width: 100%;
 }
@@ -51,6 +55,17 @@ video {
 	max-height: 1080px;
 	margin: 0 auto;
 	background-color: #000;
+}
+
+.fullscreen {
+	width: 100vw !important;
+	height: 100vh !important;
+	max-height: 100vh !important;
+	z-index: 9;
+}
+
+.fullscreen video {
+	max-height: 100vh !important;
 }
 
 .video-bar {

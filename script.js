@@ -1,5 +1,6 @@
 var source;
 var client;
+var fullscreen = false;
 var path = location.pathname.substring(1);
 var channel = path.length == 0 ? 'hawolt' : path;
 
@@ -122,10 +123,41 @@ window.onload = function () {
   }
 
   var video = document.getElementById('video');
+  var content = document.getElementById("content")
+  var videoParent = document.getElementById("video-parent")
   var qualitySelect = document.getElementById('quality-select');
   var muteButton = document.getElementById('mute-button');
   var playButton = document.getElementById('play-button');
   var volumeControl = document.getElementById('volume-control');
+  var fullscreenBtn = document.getElementById("fullscreen");
+
+  document.addEventListener('fullscreenchange', fullscreenHandler, false);
+  document.addEventListener('mozfullscreenchange', fullscreenHandler, false);
+  document.addEventListener('MSFullscreenChange', fullscreenHandler, false);
+  document.addEventListener('webkitfullscreenchange', fullscreenHandler, false);
+
+  fullscreenBtn.addEventListener('click', () => {
+    if (!fullscreen) {
+      if (content.requestFullscreen) {
+        content.requestFullscreen();
+      } else if (content.webkitRequestFullscreen) { /* Safari */
+        content.webkitRequestFullscreen();
+      } else if (content.msRequestFullscreen) { /* IE11 */
+        content.msRequestFullscreen();
+      }
+    } else {
+      document.exitFullscreen()
+    }
+  });
+
+  function fullscreenHandler() {
+    fullscreen = !fullscreen;
+    videoParent.classList.toggle("fullscreen");
+    content.classList.toggle("overflow")
+
+    fullscreenBtn.childNodes[0].classList.toggle("fa-expand");
+    fullscreenBtn.childNodes[0].classList.toggle("fa-compress");
+  }
 
   video.muted = true;
   volumeControl.disabled = video.muted;
