@@ -10,21 +10,21 @@ function incoming(json) {
   console.log("[ws-in] " + json)
   if (!json.hasOwnProperty("instruction")) {
     var data = json["result"].split(" ");
-    switch (data[1]) {
+    switch (data[0]) {
       case "COOLDOWN":
-        addMessageElement(true, "", "You need to wait before you can update your name again.")
+        addMessageElement(true, "", "system", "You need to wait before you can update your name again.")
         break;
       case "BAD_NAME":
-        addMessageElement(true, "", "A name can only contain A-Z and 0-9, max length is 15.")
+        addMessageElement(true, "", "system", "A name can only contain A-Z and 0-9, max length is 15.")
         break;
       case "NAME_TAKEN":
-        addMessageElement(true, "", "This name is already taken.")
+        addMessageElement(true, "", "system", "This name is already taken.")
         break;
       case "EMPTY_MESSAGE":
-        addMessageElement(true, "", "You can't send an empty message.")
+        addMessageElement(true, "", "system", "You can't send an empty message.")
         break;
       case "MESSAGE_TO_LONG":
-        addMessageElement(true, "", "Your message is to long, character limit is 200.")
+        addMessageElement(true, "", "system", "Your message is to long, character limit is 200.")
         break;
     }
     return;
@@ -121,7 +121,7 @@ function submitMessage() {
         break;
       case "rename":
         if (msg.split(" ").length > 1) {
-          client.namechange(btoa(msg.split(" ").slice(1).join(" ")), darkness, channel);
+          client.namechange(btoa(msg.split(" ").slice(1).join(" ")), incoming, channel);
         } else {
           addMessageElement(true, "", "system", "usage: .rename NAME")
         }
