@@ -198,8 +198,6 @@ video {
 	height: 100%;
 	overflow-y: scroll;
 	word-wrap: break-word;
-	display: flex;
-	flex-direction: column;
 }
 
 #submit {
@@ -210,7 +208,6 @@ video {
 .message {
 	white-space: preserve;
 	word-break: break-all;
-	display: inline-block;
 	padding: 10px;
 	padding-top: 0px;
 }
