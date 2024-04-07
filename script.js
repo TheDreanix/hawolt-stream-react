@@ -8,7 +8,6 @@ let isPageClicked = false;
 function incoming(json) {
   if (!json.hasOwnProperty("instruction")) return;
   let instruction = json["instruction"];
-  console.log(json);
   switch (instruction) {
     case "list":
       document.getElementById("viewers").innerText = json["users"].length;
@@ -24,7 +23,7 @@ function darkness() {
 }
 
 function connecting() {
-  addMessageElement(true, "", "system", "connecting to chat")
+  addMessageElement(true, "", "system", "connecting to chat...")
 }
 
 function reconnect() {
@@ -69,8 +68,8 @@ function addMessageElement(isWithType, user, identifier, msg) {
 }
 
 function ready() {
-  addMessageElement(true, "", "system", "connected to chat")
-  addMessageElement(true, "", "system", "change your name using .namechange")
+  addMessageElement(true, "", "system", "connected.")
+  addMessageElement(true, "", "system", "change your name using .rename NAME")
   enter(channel);
 }
 
@@ -79,7 +78,7 @@ function enter(channel) {
 }
 
 function onJoinEvent(json) {
-  console.log(json);
+
 }
 
 function submitMessage() {
@@ -94,11 +93,11 @@ function submitMessage() {
   } else {
     let command = msg.substring(1).split(" ")[0];
     switch (command) {
-      case "namechange":
+      case "rename":
         if (msg.split(" ").length > 1) {
           client.namechange(btoa(msg.split(" ").slice(1).join(" ")), darkness, channel);
         } else {
-          addMessageElement(true, "", "system", "usage: .namechange NAME")
+          addMessageElement(true, "", "system", "usage: .rename NAME")
         }
         break;
     }
