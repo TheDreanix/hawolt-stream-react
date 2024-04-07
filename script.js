@@ -159,7 +159,6 @@ window.onload = function () {
   }
 
   video.muted = true;
-  volumeControl.disabled = video.muted;
   setVolume()
 
   window.hls = new Hls();
@@ -213,7 +212,7 @@ window.onload = function () {
   });
 
   hls.on(Hls.Events.ERROR, function (event, data) {
-    console.error('HLS error:', data);
+    //console.error('HLS error:', data);
   });
 
   qualitySelect.addEventListener('change', function () {
@@ -239,7 +238,9 @@ window.onload = function () {
   }
 
   function setVolume() {
+    video.muted = false;
     video.volume = volumeControl.value;
+    muteButton.innerHTML = video.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
   }
 
   muteButton.addEventListener('click', function () {
@@ -276,7 +277,7 @@ function load(playlist, delay = 1000) {
 
   hls.once(Hls.Events.ERROR, function (event, data) {
     if (data.fatal && data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-      console.error('Network error occurred while loading source:', playlist);
+      //console.error('Network error occurred while loading source:', playlist);
       retry();
     }
   });
