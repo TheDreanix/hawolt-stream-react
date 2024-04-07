@@ -63,7 +63,7 @@ function addMessageToMessagebox(json) {
   let isWithType = json.hasOwnProperty("type");
   let temp = document.createElement("span")
   temp.innerText = msg;
-  addMessageElement(isWithType, user, identifier, replaceEmotesWithImages(linkifyHtml(temp.innerHTML)));
+  addMessageElement(isWithType, user, identifier, replaceEmotesWithImages(linkifyHtml(temp.innerHTML, {attributes: {target: "_blank"}})));
 }
 
 function addMessageElement(isWithType, user, identifier, msg) {
