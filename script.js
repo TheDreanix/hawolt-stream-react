@@ -40,26 +40,26 @@ function addMessageToMessagebox(json) {
   let msg = json["message"];
   let identifier = json["identifier"];
   let isWithType = json.hasOwnProperty("type");
-  addMessageElement(isWithType, user, identifier, msg);
+  addMessageElement(isWithType, user, identifier, replaceEmotesWithImages(linkifyHtml(msg)));
 }
 
 function addMessageElement(isWithType, user, identifier, msg) {
   let messagebox = document.getElementById("chatbox");
   let message = document.createElement("div");
-  message.classList = 'message';
+  message.classList = 'message message-align';
   let attendee = document.createElement("span");
   attendee.title = identifier;
   let content = document.createElement("span");
   content.title = new Date().toLocaleString();
-  msg = linkifyHtml(msg)
+  content.classList = "message-align";
   if (isWithType) {
     message.classList.add("system")
     attendee.innerText = user;
-    content.innerHTML = " " + msg;
+    content.innerHTML = (user.length == 0 ? '' : ' ') + msg;
   } else {
     attendee.classList = "user-message";
     attendee.innerText = user + ":";
-    content.innerHTML = " " + msg;
+    content.innerHTML = "&nbsp;" + msg;
   }
   message.appendChild(attendee);
   message.appendChild(content);
@@ -69,7 +69,7 @@ function addMessageElement(isWithType, user, identifier, msg) {
 
 function ready() {
   addMessageElement(true, "", "system", "connected.")
-  addMessageElement(true, "", "system", "change your name using .rename NAME")
+  addMessageElement(true, "", "system", "list commands via .commands")
   enter(channel);
 }
 
@@ -93,12 +93,26 @@ function submitMessage() {
   } else {
     let command = msg.substring(1).split(" ")[0];
     switch (command) {
+      case "commands":
+        addMessageElement(true, "", "system", "list available emotes: .emotes")
+        addMessageElement(true, "", "system", "change name: .rename &lt;name&gt;")
+        break;
       case "rename":
         if (msg.split(" ").length > 1) {
           client.namechange(btoa(msg.split(" ").slice(1).join(" ")), darkness, channel);
         } else {
           addMessageElement(true, "", "system", "usage: .rename NAME")
         }
+        break;
+      case "emotes":
+        var list = "";
+        for (var key in emoteMapping) {
+          if (emoteMapping.hasOwnProperty(key)) {
+            if (list.length != 0) list += " / ";
+            list += key + ": " + replaceEmotesWithImages(key);
+          }
+        }
+        addMessageElement(true, "", "system", list);
         break;
     }
   }
@@ -245,7 +259,6 @@ window.onload = function () {
 
   muteButton.addEventListener('click', function () {
     video.muted = !video.muted;
-    volumeControl.disabled = video.muted;
     muteButton.innerHTML = video.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
   });
 
