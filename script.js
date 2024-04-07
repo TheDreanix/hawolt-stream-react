@@ -209,7 +209,6 @@ window.onload = function () {
       video.muted = true;
       muteButton.innerHTML = video.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-up"></i>';
     }
-    volumeControl.disabled = video.muted;
     video.play().catch(function (error) {
       playButton.innerHTML = '<i class="fas fa-play"></i>';
     });
