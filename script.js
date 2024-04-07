@@ -51,8 +51,7 @@ function addMessageElement(isWithType, user, identifier, msg) {
   attendee.title = identifier;
   let content = document.createElement("span");
   content.title = new Date().toLocaleString();
-  const linkRegex = /(https?:\/\/[^\s]+)/g;
-  msg = msg.replace(linkRegex, '<a href="$&" target="_blank">$&</a>');
+  msg = linkifyHtml(msg)
   if (isWithType) {
     message.classList.add("system")
     attendee.innerText = user;
