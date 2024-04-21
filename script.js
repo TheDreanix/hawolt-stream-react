@@ -1,3 +1,4 @@
+var video;
 var source;
 var client;
 var fullscreen = false;
@@ -122,7 +123,9 @@ function submitMessage() {
         break;
       case "rename":
         if (msg.split(" ").length > 1) {
-          client.namechange(btoa(msg.split(" ").slice(1).join(" ")), incoming, channel);
+	  var name = msg.split(" ").slice(1).join(" ");
+	  localStorage.setItem('name', name);
+          client.namechange(btoa(name), incoming, channel);
         } else {
           addMessageElement(true, "", "system", "usage: .rename NAME")
         }
@@ -142,10 +145,15 @@ function submitMessage() {
   submit.value = "";
 }
 
+function getValueFromStorage(key, defaultValue) {
+    var storedName = localStorage.getItem(key);
+    return storedName ? storedName : defaultValue;
+}
 
 window.onload = function () {
+  var name = getValueFromStorage('name','anon');
   client = new RemoteClient(
-    "wss://stream.hawolt.com:42069/?name=anon",
+    "wss://stream.hawolt.com:42069/?name="+name,
     this
   );
 
@@ -158,7 +166,8 @@ window.onload = function () {
     channel = href.substring(href.lastIndexOf('/') + 1);
   }
 
-  var video = document.getElementById('video');
+  video = document.getElementById('video');
+
   var content = document.getElementById("content")
   var videoParent = document.getElementById("video-parent")
   var qualitySelect = document.getElementById('quality-select');
@@ -226,6 +235,12 @@ window.onload = function () {
           qualitySelect.appendChild(option);
         }
       });
+      
+      var chat_option = document.createElement('option');
+      chat_option.textContent = "chat";
+      chat_option.value = "chat";
+      qualitySelect.appendChild(chat_option);
+      
       initialized = true;
     }
     if (!isPageClicked) {
@@ -237,11 +252,11 @@ window.onload = function () {
     });
   });
 
-  var option = document.createElement('option');
-  option.textContent = "source";
-  option.value = "source";
-  qualitySelect.insertBefore(option, qualitySelect.firstChild);
-
+  var src_option = document.createElement('option');
+  src_option.textContent = "source";
+  src_option.value = "source";
+  qualitySelect.insertBefore(src_option, qualitySelect.firstChild);
+  
   hls.on(Hls.Events.LEVEL_LOADED, function (event, data) {
     currentQualityIndex = hls.nextLoadLevel;
     qualitySelect.selectedIndex = currentQualityIndex + (selectedQuality === 'source' ? 0 : 1);
@@ -253,23 +268,38 @@ window.onload = function () {
 
   qualitySelect.addEventListener('change', function () {
     selectedQuality = qualitySelect.value;
-    if (selectedQuality === "source") {
-      load('https://stream.hawolt.com/hls/source/' + channel + '/index.m3u8');
+    if (selectedQuality === "chat") {
+      video.style.display="none";
+      video.pause();
+      hls.stopLoad();
+      playButton.innerHTML = '<i class="fas fa-play"></i>'; // Change button to play icon
     } else {
-      if (source.includes('source')) {
-        load('https://stream.hawolt.com/hls/transcoded/' + channel + '.m3u8');
+	video.style.display="block";
+        if (selectedQuality === "source") {
+        load('https://stream.hawolt.com/hls/source/' + channel + '/index.m3u8');
+      } else {
+        if (source.includes('source')) {
+          load('https://stream.hawolt.com/hls/transcoded/' + channel + '.m3u8');
+        }
+        hls.nextLevel = parseInt(selectedQuality);
+	if(video.paused) {
+          playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Change button to pause icon
+          hls.startLoad();
+          video.play();
+	}
       }
-      hls.nextLevel = parseInt(selectedQuality);
     }
   });
 
   function startPlayback() {
     if (video.paused) {
+      hls.startLoad();
       video.play();
       playButton.title = "Pause (space)"
       playButton.innerHTML = '<i class="fas fa-pause"></i>'; // Change button to pause icon
     } else {
       video.pause();
+      hls.stopLoad();
       playButton.title = "Play (space)"
       playButton.innerHTML = '<i class="fas fa-play"></i>'; // Change button to play icon
     }
