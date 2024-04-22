@@ -264,6 +264,11 @@ video {
 	padding: 0px 10px;
 }
 
+.user-message {     
+	font-weight: 800;
+	color: bisque;
+}
+
 input[type="text"] {
 	font-size: 16px;
 	border: none;
